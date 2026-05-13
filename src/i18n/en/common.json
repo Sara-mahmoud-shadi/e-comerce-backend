@@ -1,0 +1,20 @@
+{
+  "HELLO": "Hello",
+  "PRODUCT": {
+    "NEW": "New Product",
+    "CREATED": "Product created successfully",
+    "UPDATED": "Product updated successfully",
+    "DELETED": "Product deleted successfully",
+    "NOT_FOUND": "Product not found"
+  },
+  "AUTH": {
+    "UNAUTHORIZED": "Unauthorized access",
+    "FORBIDDEN": "Forbidden access",
+    "LOGIN_SUCCESS": "Login successful",
+    "LOGOUT_SUCCESS": "Logout successful"
+  },
+  "VALIDATION": {
+    "REQUIRED": "This field is required",
+    "INVALID_EMAIL": "Invalid email address"
+  }
+}
