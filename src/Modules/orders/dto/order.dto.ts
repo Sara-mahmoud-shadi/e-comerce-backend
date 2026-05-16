@@ -6,6 +6,7 @@ export const CreateOrderSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
   address: z.string().min(1, 'Address is required'),
+  phone: z.string().min(1, 'Phone is required'),
   items: z.array(z.object({
     productId: z.number(),
     quantity: z.number().min(1),

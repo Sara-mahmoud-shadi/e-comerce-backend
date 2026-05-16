@@ -67,6 +67,37 @@ export class ProductsController {
     return this.productsService.findAll(paginationDto);
   }
 
+  @Get('filter')
+  @ApiOperation({ summary: 'Get products with pagination and array filters' })
+  async getProductsWithFilters(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('sort') sort?: string,
+    @Query('priceRanges') priceRanges?: string | string[],
+    @Query('categories') categories?: string | string[],
+  ) {
+    const pageNumber = page ? parseInt(page, 10) : 1;
+    const limitNumber = limit ? parseInt(limit, 10) : 10;
+    
+    let ranges: string[] = [];
+    if (priceRanges) {
+      ranges = Array.isArray(priceRanges) ? priceRanges : [priceRanges];
+    }
+
+    let categoryIds: string[] = [];
+    if (categories) {
+      categoryIds = Array.isArray(categories) ? categories : [categories];
+    }
+    
+    return this.productsService.getProductsWithFilters(
+      pageNumber,
+      limitNumber,
+      sort,
+      ranges,
+      categoryIds
+    );
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a product by id' })
   @ApiResponse({ status: 200, description: 'Return the product.', type: ProductEntity })

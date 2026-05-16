@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { ILike, Repository, Brackets } from 'typeorm';
 import { ProductEntity } from './entities/product.entity';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import * as fs from 'fs';
@@ -83,6 +83,79 @@ export class ProductsService {
       },
     };
 
+  }
+
+  async getProductsWithFilters(
+    page: number = 1,
+    limit: number = 10,
+    sort?: string,
+    priceRanges?: string[],
+    categories?: string[]
+  ) {
+    const query = this.productRepository.createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category');
+
+    if (categories && categories.length > 0) {
+      query.andWhere('product.categoryId IN (:...categories)', { categories });
+    }
+
+    if (priceRanges && priceRanges.length > 0) {
+      query.andWhere(new Brackets((qb) => {
+        priceRanges.forEach((range, index) => {
+          const isOr = index > 0;
+          let condition = '';
+          let params = {};
+          
+          if (range.includes('-')) {
+            const [min, max] = range.split('-');
+            condition = `product.price BETWEEN :min${index} AND :max${index}`;
+            params = { [`min${index}`]: Number(min), [`max${index}`]: Number(max) };
+          } else if (range.endsWith('+')) {
+            const min = range.replace('+', '');
+            condition = `product.price >= :min${index}`;
+            params = { [`min${index}`]: Number(min) };
+          } else if (range.startsWith('<')) {
+            const max = range.replace('<', '');
+            condition = `product.price < :max${index}`;
+            params = { [`max${index}`]: Number(max) };
+          } else if (range.startsWith('>')) {
+            const min = range.replace('>', '');
+            condition = `product.price > :min${index}`;
+            params = { [`min${index}`]: Number(min) };
+          }
+
+          if (condition) {
+            if (isOr) {
+              qb.orWhere(condition, params);
+            } else {
+              qb.where(condition, params);
+            }
+          }
+        });
+      }));
+    }
+
+    if (sort === 'price_asc') {
+      query.orderBy('product.price', 'ASC');
+    } else if (sort === 'price_desc') {
+      query.orderBy('product.price', 'DESC');
+    } else {
+      query.orderBy('product.id', 'DESC'); // Default newest
+    }
+
+    const skip = (page - 1) * limit;
+    query.skip(skip).take(limit);
+
+    const [products, total] = await query.getManyAndCount();
+
+    return {
+      data: products,
+      meta: {
+        total,
+        page: Number(page),
+        last_page: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: number): Promise<ProductEntity> {

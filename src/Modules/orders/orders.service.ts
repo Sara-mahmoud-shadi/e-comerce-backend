@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { OrderEntity } from './entities/order.entity';
 import { OrderItemEntity } from './entities/order-item.entity';
 import { CreateOrderDto, UpdateOrderStatusDto } from './dto/order.dto';
@@ -8,6 +8,7 @@ import { ProductEntity } from '../products/entities/product.entity';
 import { OrderStatus } from '../../utilies/enums/order-status.enum';
 
 import { OrderLogEntity } from './entities/order-log.entity';
+import { PaginationDto } from 'src/utilies/dto/pagination.dto';
 
 @Injectable()
 export class OrdersService {
@@ -26,8 +27,7 @@ export class OrdersService {
     const { name, email, address, items } = createOrderDto;
 
     const order_number = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-    // Create order without relations — TypeORM manages them separately
+ 
     const order = this.orderRepository.create({
       name,
       email,
@@ -45,12 +45,9 @@ export class OrdersService {
     });
     await this.orderLogRepository.save(initialLog);
 
-    // Fetch all products in one query
     const productIds = items.map((i) => i.productId);
     const products = await this.productRepository.findByIds(productIds);
     const productMap = new Map(products.map((p) => [p.id, p]));
-
-    // Validate all products exist before saving any item
     for (const item of items) {
       if (!productMap.has(item.productId)) {
         throw new NotFoundException(`Product with ID ${item.productId} not found`);
@@ -74,8 +71,30 @@ export class OrdersService {
     return this.findOne(savedOrder.id);
   }
 
-  async findAll(): Promise<OrderEntity[]> {
-    return await this.orderRepository.find({order:{id:'DESC'}, relations: ['items', 'items.product'] });
+  async findAll(paginationDto: PaginationDto) {
+    const { page, limit, search } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.orderRepository.findAndCount({
+      where: search ? [
+        { name: ILike(`%${search}%`) },
+        { order_number: ILike(`%${search}%`) },
+      ] : {},
+      skip,
+      take: limit,
+      order: { id: 'ASC' },
+      relations: ['items', 'items.product'],
+    });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: number): Promise<OrderEntity> {

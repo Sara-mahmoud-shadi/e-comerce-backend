@@ -19,6 +19,7 @@ import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { CategoryEntity } from './entities/category.entity'; 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { PaginationDto } from 'src/utilies/dto/pagination.dto';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -61,12 +62,45 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
 
+  @Get('pagination')
+  @ApiOperation({ summary: 'Get all categories with pagination' })
+  @ApiResponse({ status: 200, description: 'Return paginated categories.' })
+  findAllWithPagination(@Query() paginationDto: PaginationDto) {
+    return this.categoriesService.findAllPagination(paginationDto);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a category by id' })
   @ApiResponse({ status: 200, description: 'Return the category.', type: CategoryEntity })
   @ApiResponse({ status: 404, description: 'Category not found.' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.categoriesService.findOne(id);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get products for a category with pagination and filtering' })
+  async getCategoryProducts(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('sort') sort?: string,
+    @Query('priceRanges') priceRanges?: string | string[],
+  ) {
+    const pageNumber = page ? parseInt(page, 10) : 1;
+    const limitNumber = limit ? parseInt(limit, 10) : 10;
+    
+    let ranges: string[] = [];
+    if (priceRanges) {
+      ranges = Array.isArray(priceRanges) ? priceRanges : [priceRanges];
+    }
+    
+    return this.categoriesService.getCategoryProducts(
+      id,
+      pageNumber,
+      limitNumber,
+      sort,
+      ranges
+    );
   }
 
   @Patch(':id')
