@@ -21,7 +21,7 @@ export class OrderEntity {
   @Column({ unique: true })
   order_number: string;
 
-  @Column({unique:true})
+  @Column()
   phone: string;
 
   @Column({

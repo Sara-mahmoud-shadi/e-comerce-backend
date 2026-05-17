@@ -10,7 +10,7 @@ export class CartEntity {
   @Column({ nullable: true })
   userId?: number;
 
-  @OneToMany(() => CartItemEntity, (item) => item.cart, { cascade: true,onDelete:'CASCADE' })
+  @OneToMany(() => CartItemEntity, (item) => item.cart, {eager: true, cascade: true,onDelete:'CASCADE' })
   CartItems: CartItemEntity[];
 
   @CreateDateColumn({ type: 'timestamp', default: () => currentTimestamp })

@@ -98,43 +98,69 @@ export class ProductsService {
     if (categories && categories.length > 0) {
       query.andWhere('product.categoryId IN (:...categories)', { categories });
     }
-
+ 
+      // Price Filters
     if (priceRanges && priceRanges.length > 0) {
-      query.andWhere(new Brackets((qb) => {
-        priceRanges.forEach((range, index) => {
-          const isOr = index > 0;
-          let condition = '';
-          let params = {};
-          
-          if (range.includes('-')) {
-            const [min, max] = range.split('-');
-            condition = `product.price BETWEEN :min${index} AND :max${index}`;
-            params = { [`min${index}`]: Number(min), [`max${index}`]: Number(max) };
-          } else if (range.endsWith('+')) {
-            const min = range.replace('+', '');
-            condition = `product.price >= :min${index}`;
-            params = { [`min${index}`]: Number(min) };
-          } else if (range.startsWith('<')) {
-            const max = range.replace('<', '');
-            condition = `product.price < :max${index}`;
-            params = { [`max${index}`]: Number(max) };
-          } else if (range.startsWith('>')) {
-            const min = range.replace('>', '');
-            condition = `product.price > :min${index}`;
-            params = { [`min${index}`]: Number(min) };
-          }
+      query.andWhere(
+        new Brackets((qb) => {
+          priceRanges.forEach((range, index) => {
+            let condition = '';
+            let params: any = {};
 
-          if (condition) {
-            if (isOr) {
-              qb.orWhere(condition, params);
-            } else {
-              qb.where(condition, params);
+            // 50-200
+            if (range.includes('-')) {
+              const [min, max] = range.split('-');
+
+              if (!isNaN(Number(min)) && !isNaN(Number(max))) {
+                condition = `
+                  product.price BETWEEN :min${index}
+                  AND :max${index}
+                `;
+
+                params = {
+                  [`min${index}`]: Number(min),
+                  [`max${index}`]: Number(max),
+                };
+              }
             }
-          }
-        });
-      }));
-    }
 
+            // lessThan50
+            else if (range.startsWith('lessThan')) {
+              const max = range.replace('lessThan', '');
+
+              if (!isNaN(Number(max))) {
+                condition = `product.price < :max${index}`;
+
+                params = {
+                  [`max${index}`]: Number(max),
+                };
+              }
+            }
+
+            // greaterThan500
+            else if (range.startsWith('greaterThan')) {
+              const min = range.replace('greaterThan', '');
+
+              if (!isNaN(Number(min))) {
+                condition = `product.price > :min${index}`;
+
+                params = {
+                  [`min${index}`]: Number(min),
+                };
+              }
+            }
+
+            if (condition) {
+              if (index === 0) {
+                qb.where(condition, params);
+              } else {
+                qb.orWhere(condition, params);
+              }
+            }
+          });
+        }),
+      );
+    }
     if (sort === 'price_asc') {
       query.orderBy('product.price', 'ASC');
     } else if (sort === 'price_desc') {
@@ -157,6 +183,7 @@ export class ProductsService {
       },
     };
   }
+
 
   async findOne(id: number): Promise<ProductEntity> {
     const product = await this.productRepository.findOne({ where: { id } });

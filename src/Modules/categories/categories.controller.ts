@@ -77,10 +77,10 @@ export class CategoriesController {
     return this.categoriesService.findOne(id);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get products for a category with pagination and filtering' })
+  @Get(':slug/products')
+  @ApiOperation({ summary: 'Get products for a category by slug with pagination and filtering' })
   async getCategoryProducts(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('slug') slug: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('sort') sort?: string,
@@ -88,18 +88,19 @@ export class CategoriesController {
   ) {
     const pageNumber = page ? parseInt(page, 10) : 1;
     const limitNumber = limit ? parseInt(limit, 10) : 10;
-    
+
     let ranges: string[] = [];
+
     if (priceRanges) {
       ranges = Array.isArray(priceRanges) ? priceRanges : [priceRanges];
     }
-    
+
     return this.categoriesService.getCategoryProducts(
-      id,
+      slug,
       pageNumber,
       limitNumber,
       sort,
-      ranges
+      ranges,
     );
   }
 

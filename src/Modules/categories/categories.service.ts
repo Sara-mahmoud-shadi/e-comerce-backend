@@ -51,8 +51,7 @@ export class CategoriesService {
 
   async findAll() {
     return await this.categoryRepository.find({
-      order: { id: 'DESC' },
-      relations: ['products'],
+      order: { id: 'ASC' }, 
     });
   }
 
@@ -138,71 +137,118 @@ export class CategoriesService {
   }
 
   async getCategoryProducts(
-    categoryId: number,
+    slug: string,
     page: number = 1,
     limit: number = 10,
     sort?: string,
-    priceRanges?: string[]
+    priceRanges: string[] = [],
   ) {
-    const query = this.productRepository.createQueryBuilder('product')
-      .where('product.categoryId = :categoryId', { categoryId });
+    page = Number(page) > 0 ? Number(page) : 1;
+    limit = Number(limit) > 0 ? Number(limit) : 10;
 
-    if (priceRanges && priceRanges.length > 0) {
-      query.andWhere(new Brackets((qb) => {
-        priceRanges.forEach((range, index) => {
-          // range format expected: "min-max" e.g., "50-200", "0-50", "500+"
-          const isOr = index > 0;
-          let condition = '';
-          let params = {};
-          
-          if (range.includes('-')) {
-            const [min, max] = range.split('-');
-            condition = `product.price BETWEEN :min${index} AND :max${index}`;
-            params = { [`min${index}`]: Number(min), [`max${index}`]: Number(max) };
-          } else if (range.endsWith('+')) {
-            const min = range.replace('+', '');
-            condition = `product.price >= :min${index}`;
-            params = { [`min${index}`]: Number(min) };
-          } else if (range.startsWith('<')) {
-            const max = range.replace('<', '');
-            condition = `product.price < :max${index}`;
-            params = { [`max${index}`]: Number(max) };
-          } else if (range.startsWith('>')) {
-            const min = range.replace('>', '');
-            condition = `product.price > :min${index}`;
-            params = { [`min${index}`]: Number(min) };
-          }
+    const query = this.productRepository
+      .createQueryBuilder('product')
+      .innerJoinAndSelect('product.category', 'category', 'category.slug = :slug', { slug });
+ 
+ 
+      // Price Filters
+    if (priceRanges.length > 0) {
+      query.andWhere(
+        new Brackets((qb) => {
+          priceRanges.forEach((range, index) => {
+            let condition = '';
+            let params: any = {};
 
-          if (condition) {
-            if (isOr) {
-              qb.orWhere(condition, params);
-            } else {
-              qb.where(condition, params);
+            // 50-200
+            if (range.includes('-')) {
+              const [min, max] = range.split('-');
+
+              if (!isNaN(Number(min)) && !isNaN(Number(max))) {
+                condition = `
+                  product.price BETWEEN :min${index}
+                  AND :max${index}
+                `;
+
+                params = {
+                  [`min${index}`]: Number(min),
+                  [`max${index}`]: Number(max),
+                };
+              }
             }
-          }
-        });
-      }));
+
+            // lessThan50
+            else if (range.startsWith('lessThan')) {
+              const max = range.replace('lessThan', '');
+
+              if (!isNaN(Number(max))) {
+                condition = `product.price < :max${index}`;
+
+                params = {
+                  [`max${index}`]: Number(max),
+                };
+              }
+            }
+
+            // greaterThan500
+            else if (range.startsWith('greaterThan')) {
+              const min = range.replace('greaterThan', '');
+
+              if (!isNaN(Number(min))) {
+                condition = `product.price > :min${index}`;
+
+                params = {
+                  [`min${index}`]: Number(min),
+                };
+              }
+            }
+
+            if (condition) {
+              if (index === 0) {
+                qb.where(condition, params);
+              } else {
+                qb.orWhere(condition, params);
+              }
+            }
+          });
+        }),
+      );
     }
 
-    if (sort === 'price_asc') {
-      query.orderBy('product.price', 'ASC');
-    } else if (sort === 'price_desc') {
-      query.orderBy('product.price', 'DESC');
-    } else {
-      query.orderBy('product.id', 'DESC'); // Default newest
+    // Sorting
+    switch (sort) {
+      case 'price_asc':
+        query.orderBy('product.price', 'ASC');
+        break;
+
+      case 'price_desc':
+        query.orderBy('product.price', 'DESC');
+        break;
+
+      case 'oldest':
+        query.orderBy('product.id', 'ASC');
+        break;
+
+      default:
+        query.orderBy('product.id', 'ASC');
+        break;
     }
 
+    // Pagination
     const skip = (page - 1) * limit;
+
     query.skip(skip).take(limit);
 
     const [products, total] = await query.getManyAndCount();
 
-    return {
+    return { 
       data: products,
       meta: {
         total,
-        page: Number(page),
+        page,
+        limit,
         last_page: Math.ceil(total / limit),
+        has_next_page: page < Math.ceil(total / limit),
+        has_prev_page: page > 1,
       },
     };
   }

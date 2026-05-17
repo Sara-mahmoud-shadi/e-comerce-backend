@@ -18,7 +18,7 @@ export class CartService {
   ) {}
 
   async findAll(){
-    return await this.cartRepository.find({order:{id:'DESC',},  relations: ['CartItems', 'CartItems.product']});
+    return await this.cartRepository.find({order:{id:'ASC',},  relations: ['CartItems', 'CartItems.product']});
   }
   async getCart(userId?: number): Promise<CartEntity> {
     let cart = await this.cartRepository.findOne({
@@ -62,24 +62,24 @@ export class CartService {
     return await this.getCart(userId);
   }
 
-  async updateItemQuantity(
-    userId: number | undefined,
-    itemId: number,
-    updateCartItemDto: UpdateCartItemDto,
-  ): Promise<CartEntity> {
-    const cartItem = await this.cartItemRepository.findOne({
-      where: { id: itemId, cart: { userId } },
-    });
+  // async updateItemQuantity(
+  //   userId: number | undefined,
+  //   itemId: number,
+  //   updateCartItemDto: UpdateCartItemDto,
+  // ): Promise<CartEntity> {
+  //   const cartItem = await this.cartItemRepository.findOne({
+  //     where: { id: itemId, cart: { userId } },
+  //   });
 
-    if (!cartItem) {
-      throw new NotFoundException(`Cart item with ID ${itemId} not found in your cart`);
-    }
+  //   if (!cartItem) {
+  //     throw new NotFoundException(`Cart item with ID ${itemId} not found in your cart`);
+  //   }
 
-    cartItem.quantity = updateCartItemDto.quantity;
-    await this.cartItemRepository.save(cartItem);
+  //   cartItem.quantity = updateCartItemDto.quantity;
+  //   await this.cartItemRepository.save(cartItem);
 
-    return await this.getCart(userId);
-  }
+  //   return await this.getCart(userId);
+  // }
 
   async removeItem(userId: number | undefined, itemId: number): Promise<CartEntity> {
     const cartItem = await this.cartItemRepository.findOne({

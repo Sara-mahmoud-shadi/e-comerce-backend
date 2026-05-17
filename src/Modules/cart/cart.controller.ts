@@ -19,7 +19,7 @@ export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get current user cart' })
+  @ApiOperation({ summary: 'Get current cart' })
   @ApiResponse({ status: 200, description: 'Return the cart.', type: CartEntity })
   getCart() { 
     return this.cartService.findAll( );
@@ -33,16 +33,16 @@ export class CartController {
     return this.cartService.addToCart(userId, addToCartDto);
   }
 
-  @Patch('items/:id')
-  @ApiOperation({ summary: 'Update cart item quantity' })
-  @ApiResponse({ status: 200, description: 'Quantity updated.', type: CartEntity })
-  updateItem(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateCartItemDto: UpdateCartItemDto,
-  ) {
-    const userId = undefined;
-    return this.cartService.updateItemQuantity(userId, id, updateCartItemDto);
-  }
+  // @Patch('items/:id')
+  // @ApiOperation({ summary: 'Update cart item quantity' })
+  // @ApiResponse({ status: 200, description: 'Quantity updated.', type: CartEntity })
+  // updateItem(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Body() updateCartItemDto: UpdateCartItemDto,
+  // ) {
+  //   const userId = undefined;
+  //   return this.cartService.updateItemQuantity(userId, id, updateCartItemDto);
+  // }
 
   @Delete('items/:id')
   @ApiOperation({ summary: 'Remove an item from the cart' })

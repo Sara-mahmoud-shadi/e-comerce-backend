@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike } from 'typeorm';
+import { Repository, ILike, In } from 'typeorm';
 import { OrderEntity } from './entities/order.entity';
 import { OrderItemEntity } from './entities/order-item.entity';
 import { CreateOrderDto, UpdateOrderStatusDto } from './dto/order.dto';
@@ -24,13 +24,14 @@ export class OrdersService {
   ) { }
 
   async create(createOrderDto: CreateOrderDto): Promise<OrderEntity> {
-    const { name, email, address, items } = createOrderDto;
+    const { name, email, phone, address, items } = createOrderDto;
 
     const order_number = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
  
     const order = this.orderRepository.create({
       name,
       email,
+      phone,
       address,
       order_number,
       status_order: OrderStatus.PENDING,
@@ -46,7 +47,7 @@ export class OrdersService {
     await this.orderLogRepository.save(initialLog);
 
     const productIds = items.map((i) => i.productId);
-    const products = await this.productRepository.findByIds(productIds);
+    const products = await this.productRepository.findBy({ id: In(productIds) });
     const productMap = new Map(products.map((p) => [p.id, p]));
     for (const item of items) {
       if (!productMap.has(item.productId)) {
@@ -71,32 +72,47 @@ export class OrdersService {
     return this.findOne(savedOrder.id);
   }
 
-  async findAll(paginationDto: PaginationDto) {
-    const { page, limit, search } = paginationDto;
-    const skip = (page - 1) * limit;
+async findAll(paginationDto: PaginationDto) {
+  const { page, limit, search } = paginationDto;
+  const skip = (page - 1) * limit;
 
-    const [data, total] = await this.orderRepository.findAndCount({
-      where: search ? [
-        { name: ILike(`%${search}%`) },
-        { order_number: ILike(`%${search}%`) },
-      ] : {},
-      skip,
-      take: limit,
-      order: { id: 'ASC' },
-      relations: ['items', 'items.product'],
-    });
+  const [data, total] = await this.orderRepository.findAndCount({
+    where: search
+      ? [
+          { name: ILike(`%${search}%`) },
+          { order_number: ILike(`%${search}%`) },
+        ]
+      : {},
+    skip,
+    take: limit,
+    order: { id: 'ASC' },
+    relations: ['items', 'items.product'],
+  });
+
+  const ordersWithTotalPrice = data.map((order) => {
+    const totalPrice = (order.items || []).reduce((sum, item) => {
+      const price = item.product?.price || 0;
+      const quantity = item.quantity || 1;
+
+      return sum + Number(price) * quantity;
+    }, 0);
 
     return {
-      data,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      ...order,
+      totalPrice:this.formatPrice(totalPrice),
     };
-  }
+  });
 
+  return {
+    data: ordersWithTotalPrice,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+}
   async findOne(id: number): Promise<OrderEntity> {
     const order = await this.orderRepository.findOne({
       where: { id },
@@ -132,4 +148,10 @@ export class OrdersService {
     const order = await this.findOne(id);
     await this.orderRepository.remove(order);
   }
+ formatPrice = (value: number) => {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+};
 }
