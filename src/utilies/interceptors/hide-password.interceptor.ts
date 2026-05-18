@@ -10,9 +10,7 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class HidePasswordInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    return next.handle().pipe(
-      map((data) => this.removePassword(data)),
-    );
+    return next.handle().pipe(map((data) => this.removePassword(data)));
   }
 
   private removePassword(data: any): any {
@@ -30,7 +28,7 @@ export class HidePasswordInterceptor implements NestInterceptor {
     if (data !== null && typeof data === 'object') {
       // Create a shallow copy to avoid mutating the original object if it's an entity
       const { password, ...rest } = data;
-      
+
       // Recursively remove password from nested objects/arrays
       for (const key in rest) {
         if (Object.prototype.hasOwnProperty.call(rest, key)) {

@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { OrderStatus } from '../../../utilies/enums/order-status.enum';
 import { OrderItemEntity } from './order-item.entity';
 import { OrderLogEntity } from './order-log.entity';
@@ -31,15 +38,25 @@ export class OrderEntity {
   })
   status_order: OrderStatus;
 
-  @OneToMany(() => OrderItemEntity, (item) => item.order, { cascade: true,onDelete:'CASCADE' })
+  @OneToMany(() => OrderItemEntity, (item) => item.order, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   items: OrderItemEntity[];
 
-  @OneToMany(() => OrderLogEntity, (log) => log.order, { cascade: true,onDelete:'CASCADE' })
+  @OneToMany(() => OrderLogEntity, (log) => log.order, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   logs: OrderLogEntity[];
 
   @CreateDateColumn({ type: 'timestamp', default: () => currentTimestamp })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => currentTimestamp, onUpdate: currentTimestamp })
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => currentTimestamp,
+    onUpdate: currentTimestamp,
+  })
   updatedAt: Date;
 }

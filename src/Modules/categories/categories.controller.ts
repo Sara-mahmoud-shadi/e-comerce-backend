@@ -12,11 +12,18 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
-import { CategoryEntity } from './entities/category.entity'; 
+import { CategoryEntity } from './entities/category.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { PaginationDto } from 'src/utilies/dto/pagination.dto';
@@ -47,7 +54,11 @@ export class CategoriesController {
       },
     },
   })
-  @ApiResponse({ status: 201, description: 'The category has been successfully created.', type: CategoryEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'The category has been successfully created.',
+    type: CategoryEntity,
+  })
   create(
     @Body() createCategoryDto: CreateCategoryDto,
     @UploadedFile() file?: Express.Multer.File,
@@ -57,8 +68,12 @@ export class CategoriesController {
 
   @Get()
   @ApiOperation({ summary: 'Get all categories' })
-  @ApiResponse({ status: 200, description: 'Return all categories.', type: [CategoryEntity] })
-  findAll( ) {
+  @ApiResponse({
+    status: 200,
+    description: 'Return all categories.',
+    type: [CategoryEntity],
+  })
+  findAll() {
     return this.categoriesService.findAll();
   }
 
@@ -71,14 +86,21 @@ export class CategoriesController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a category by id' })
-  @ApiResponse({ status: 200, description: 'Return the category.', type: CategoryEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Return the category.',
+    type: CategoryEntity,
+  })
   @ApiResponse({ status: 404, description: 'Category not found.' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.categoriesService.findOne(id);
   }
 
   @Get(':slug/products')
-  @ApiOperation({ summary: 'Get products for a category by slug with pagination and filtering' })
+  @ApiOperation({
+    summary:
+      'Get products for a category by slug with pagination and filtering',
+  })
   async getCategoryProducts(
     @Param('slug') slug: string,
     @Query('page') page?: string,
@@ -124,20 +146,31 @@ export class CategoriesController {
     },
   })
   @ApiOperation({ summary: 'Update a category' })
-  @ApiResponse({ status: 200, description: 'The category has been successfully updated.', type: CategoryEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'The category has been successfully updated.',
+    type: CategoryEntity,
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCategoryDto: UpdateCategoryDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.categoriesService.update(id, updateCategoryDto, file ? [file] : []);
+    return this.categoriesService.update(
+      id,
+      updateCategoryDto,
+      file ? [file] : [],
+    );
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a category' })
-  @ApiResponse({ status: 200, description: 'The category has been successfully deleted.' })
+  @ApiResponse({
+    status: 200,
+    description: 'The category has been successfully deleted.',
+  })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.categoriesService.remove(id);
   }

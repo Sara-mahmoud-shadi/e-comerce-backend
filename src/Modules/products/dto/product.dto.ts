@@ -2,14 +2,21 @@ import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
 export const CreateProductSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().min(1, 'Description is required'),
-  price: z.string().min(0, 'Price must be positive'),
-  price_discount: z.string().min(0).optional(),
-  instock: z.preprocess((val) => val === 'true' || val === true, z.boolean()).default(true),
-  categoryId: z.coerce.number().optional(),
+  name_en: z.string().min(1, 'common.VALIDATION.NAME_REQUIRED'),
+  name_ar: z.string().min(1, 'common.VALIDATION.NAME_REQUIRED'),
+  description: z.string().min(1, 'common.VALIDATION.DESCRIPTION_REQUIRED'),
+  price: z.string().min(1, 'common.VALIDATION.PRICE_REQUIRED'),
+  price_discount: z
+    .preprocess((val) => (val === '' ? undefined : val), z.string().min(0))
+    .optional(),
+  instock: z
+    .preprocess((val) => val === 'true' || val === true, z.boolean())
+    .default(true),
+  categoryId: z.coerce.number().min(1, 'common.VALIDATION.REQUIRED'),
   images: z.array(z.string()).optional(),
-  tax: z.coerce.number().optional(),
+  tax: z
+    .preprocess((val) => (val === '' ? undefined : val), z.coerce.number())
+    .optional(),
 });
 
 export class CreateProductDto extends createZodDto(CreateProductSchema) {}

@@ -20,7 +20,9 @@ export class UsersService implements OnModuleInit {
     const adminEmail = 'super-admin@ecommerce.com';
     const adminPassword = '16102000';
 
-    const adminExists = await this.userRepository.findOne({ where: { email: adminEmail } });
+    const adminExists = await this.userRepository.findOne({
+      where: { email: adminEmail },
+    });
 
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash(adminPassword, 10);

@@ -2,12 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { ZodValidationPipe } from 'nestjs-zod'; 
+import { ZodValidationPipe } from 'nestjs-zod';
 import { ZodExceptionFilter } from './utilies/zod-exception.filter';
 import { HidePasswordInterceptor } from './utilies/interceptors/hide-password.interceptor';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';
-
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -18,8 +17,7 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
-
-   // Enable global validation using zod
+  // Enable global validation using zod
   app.useGlobalPipes(new ZodValidationPipe());
 
   // Enable global exception filter for Zod
@@ -28,7 +26,6 @@ async function bootstrap() {
   // hides password from response for all controllers
   app.useGlobalInterceptors(new HidePasswordInterceptor());
 
-  
   const config = new DocumentBuilder()
     .setTitle('E-Commerce API')
     .setDescription('The E-Commerce backend API documentation')

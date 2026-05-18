@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { CartEntity } from './cart.entity';
 import { ProductEntity } from '../../products/entities/product.entity';
 import { currentTimestamp } from 'src/utilies/constant';
@@ -8,10 +15,12 @@ export class CartItemEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => CartEntity, (cart) => cart.CartItems , { onDelete:'CASCADE'})
+  @ManyToOne(() => CartEntity, (cart) => cart.CartItems, {
+    onDelete: 'CASCADE',
+  })
   cart: CartEntity;
 
-  @ManyToOne(() => ProductEntity, {onDelete:'CASCADE'})
+  @ManyToOne(() => ProductEntity, { onDelete: 'CASCADE' })
   product: ProductEntity;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
@@ -20,9 +29,13 @@ export class CartItemEntity {
   @Column({ default: 1 })
   quantity: number;
 
-    @CreateDateColumn({ type: 'timestamp', default: () => currentTimestamp })
-    createdAt: Date;
-  
-    @UpdateDateColumn({ type: 'timestamp', default: () => currentTimestamp, onUpdate: currentTimestamp })
-    updatedAt: Date;
+  @CreateDateColumn({ type: 'timestamp', default: () => currentTimestamp })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => currentTimestamp,
+    onUpdate: currentTimestamp,
+  })
+  updatedAt: Date;
 }

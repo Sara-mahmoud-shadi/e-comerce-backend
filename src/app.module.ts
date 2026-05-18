@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { LanguageMiddleware } from './utilies/middlewares/language.middleware';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
-  AcceptLanguageResolver,
   CookieResolver,
   HeaderResolver,
   I18nJsonLoader,
@@ -49,7 +49,6 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
       resolvers: [
         { use: HeaderResolver, options: ['lang'] },
         new CookieResolver(['lang', 'next-locale']),
-        AcceptLanguageResolver,
       ],
       loader: I18nJsonLoader,
     }),
@@ -59,10 +58,12 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
     OrdersModule,
     UsersModule,
     AuthModule,
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 10,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     CacheModule.register({
       ttl: 5000, // 5 seconds
       max: 100, // maximum number of items in cache
@@ -82,5 +83,8 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
     },
   ],
 })
-export class AppModule {}
- 
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LanguageMiddleware).forRoutes('*');
+  }
+}

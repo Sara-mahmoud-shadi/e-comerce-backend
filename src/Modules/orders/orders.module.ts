@@ -9,7 +9,12 @@ import { ProductEntity } from '../products/entities/product.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([OrderEntity, OrderItemEntity, OrderLogEntity, ProductEntity]),
+    TypeOrmModule.forFeature([
+      OrderEntity,
+      OrderItemEntity,
+      OrderLogEntity,
+      ProductEntity,
+    ]),
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

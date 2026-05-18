@@ -11,10 +11,23 @@
     "UNAUTHORIZED": "Unauthorized access",
     "FORBIDDEN": "Forbidden access",
     "LOGIN_SUCCESS": "Login successful",
-    "LOGOUT_SUCCESS": "Logout successful"
+    "LOGOUT_SUCCESS": "Logout successful",
+    "INVALID_CREDENTIALS": "Invalid credentials"
+  },
+  "CATEGORY": {
+    "NOT_FOUND": "The requested category was not found"
   },
   "VALIDATION": {
     "REQUIRED": "This field is required",
-    "INVALID_EMAIL": "Invalid email address"
+    "INVALID_EMAIL": "Invalid email address",
+    "FAILED": "Validation failed",
+    "NAME_REQUIRED": "Name is required",
+    "DESCRIPTION_REQUIRED": "Description is required",
+    "PRICE_REQUIRED": "Price is required",
+    "NAME_EN_REQUIRED": "English name is required",
+    "NAME_AR_REQUIRED": "Arabic name is required",
+    "ADDRESS_REQUIRED": "Address is required",
+    "PHONE_REQUIRED": "Phone is required",
+    "ITEMS_REQUIRED": "Order must have at least one item"
   }
 }

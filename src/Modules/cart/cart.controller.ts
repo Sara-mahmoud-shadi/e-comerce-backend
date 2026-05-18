@@ -20,14 +20,22 @@ export class CartController {
 
   @Get()
   @ApiOperation({ summary: 'Get current cart' })
-  @ApiResponse({ status: 200, description: 'Return the cart.', type: CartEntity })
-  getCart() { 
-    return this.cartService.findAll( );
+  @ApiResponse({
+    status: 200,
+    description: 'Return the cart.',
+    type: CartEntity,
+  })
+  getCart() {
+    return this.cartService.findAll();
   }
 
   @Post('items')
   @ApiOperation({ summary: 'Add an item to the cart' })
-  @ApiResponse({ status: 201, description: 'Item added successfully.', type: CartEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'Item added successfully.',
+    type: CartEntity,
+  })
   addToCart(@Body() addToCartDto: AddToCartDto) {
     const userId = undefined;
     return this.cartService.addToCart(userId, addToCartDto);

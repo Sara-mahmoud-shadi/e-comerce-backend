@@ -12,7 +12,14 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
@@ -35,9 +42,10 @@ export class ProductsController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['name', 'description', 'price'],
+      required: ['name_en', 'name_ar', 'description', 'price'],
       properties: {
-        name: { type: 'string', example: 'iPhone 15' },
+        name_en: { type: 'string', example: 'iPhone 15' },
+        name_ar: { type: 'string', example: 'ايفون 15' },
         description: { type: 'string', example: 'Latest Apple smartphone' },
         price: { type: 'number', example: 999.99 },
         price_discount: { type: 'number', example: 899.99 },
@@ -52,7 +60,11 @@ export class ProductsController {
       },
     },
   })
-  @ApiResponse({ status: 201, description: 'The product has been successfully created.', type: ProductEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'The product has been successfully created.',
+    type: ProductEntity,
+  })
   create(
     @Body() createProductDto: CreateProductDto,
     @UploadedFiles() files?: Express.Multer.File[],
@@ -62,7 +74,11 @@ export class ProductsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all products' })
-  @ApiResponse({ status: 200, description: 'Return all products.', type: [ProductEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all products.',
+    type: [ProductEntity],
+  })
   findAll(@Query() paginationDto: PaginationDto) {
     return this.productsService.findAll(paginationDto);
   }
@@ -78,7 +94,7 @@ export class ProductsController {
   ) {
     const pageNumber = page ? parseInt(page, 10) : 1;
     const limitNumber = limit ? parseInt(limit, 10) : 10;
-    
+
     let ranges: string[] = [];
     if (priceRanges) {
       ranges = Array.isArray(priceRanges) ? priceRanges : [priceRanges];
@@ -88,19 +104,23 @@ export class ProductsController {
     if (categories) {
       categoryIds = Array.isArray(categories) ? categories : [categories];
     }
-    
+
     return this.productsService.getProductsWithFilters(
       pageNumber,
       limitNumber,
       sort,
       ranges,
-      categoryIds
+      categoryIds,
     );
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a product by id' })
-  @ApiResponse({ status: 200, description: 'Return the product.', type: ProductEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Return the product.',
+    type: ProductEntity,
+  })
   @ApiResponse({ status: 404, description: 'Product not found.' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.findOne(id);
@@ -115,7 +135,8 @@ export class ProductsController {
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string', example: 'iPhone 15' },
+        name_en: { type: 'string', example: 'iPhone 15' },
+        name_ar: { type: 'string', example: 'آيفون 15' },
         description: { type: 'string', example: 'Latest Apple iPhone' },
         price: { type: 'string', example: '999.99' },
         price_discount: { type: 'string', example: '899.99' },
@@ -131,7 +152,11 @@ export class ProductsController {
     },
   })
   @ApiOperation({ summary: 'Update a product' })
-  @ApiResponse({ status: 200, description: 'The product has been successfully updated.', type: ProductEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'The product has been successfully updated.',
+    type: ProductEntity,
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProductDto: UpdateProductDto,
@@ -144,7 +169,10 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a product' })
-  @ApiResponse({ status: 200, description: 'The product has been successfully deleted.' })
+  @ApiResponse({
+    status: 200,
+    description: 'The product has been successfully deleted.',
+  })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.remove(id);
   }

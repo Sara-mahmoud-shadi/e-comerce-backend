@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { OrderStatus } from '../../../utilies/enums/order-status.enum';
 
@@ -23,6 +29,9 @@ export class OrderLogEntity {
   @CreateDateColumn()
   created_at: Date;
 
-  @ManyToOne(() => OrderEntity, (order) => order.logs,{onDelete:'CASCADE',eager: true})
+  @ManyToOne(() => OrderEntity, (order) => order.logs, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   order: OrderEntity;
 }

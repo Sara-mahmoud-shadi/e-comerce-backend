@@ -1,8 +1,12 @@
 import { currentTimestamp } from 'src/utilies/constant';
 import { UserRole } from 'src/utilies/enums/user-role';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-
-
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class UserEntity {
@@ -25,6 +29,10 @@ export class UserEntity {
   @CreateDateColumn({ type: 'timestamp', default: () => currentTimestamp })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => currentTimestamp, onUpdate: currentTimestamp })
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => currentTimestamp,
+    onUpdate: currentTimestamp,
+  })
   updatedAt: Date;
 }

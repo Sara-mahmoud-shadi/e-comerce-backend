@@ -5,10 +5,11 @@ import { CategoryEntity } from './entities/category.entity';
 import { ProductEntity } from '../products/entities/product.entity';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import * as fs from 'fs';
-import * as path from 'path'; 
+import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { baseUrlLocale } from 'src/utilies/constant';
 import { PaginationDto } from 'src/utilies/dto/pagination.dto';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class CategoriesService {
@@ -18,9 +19,13 @@ export class CategoriesService {
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
     private readonly configService: ConfigService,
+    private readonly i18n: I18nService,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto, files?: Express.Multer.File[]): Promise<CategoryEntity> {
+  async create(
+    createCategoryDto: CreateCategoryDto,
+    files?: Express.Multer.File[],
+  ): Promise<CategoryEntity> {
     const { image: imageUrl, ...categoryData } = createCategoryDto;
 
     let savedImage: string | undefined = imageUrl || undefined;
@@ -34,11 +39,15 @@ export class CategoriesService {
       const fileName = `${Date.now()}-${file.originalname}`;
       const filePath = path.join(uploadPath, fileName);
       fs.writeFileSync(filePath, file.buffer);
-      const baseUrl = this.configService.get<string>('BASE_URL') || baseUrlLocale;
+      const baseUrl =
+        this.configService.get<string>('BASE_URL') || baseUrlLocale;
       savedImage = `${baseUrl}/uploads/categories/${fileName}`;
     }
 
-    const slug = categoryData.name_en.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    const slug = categoryData.name_en
+      .toLowerCase()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '');
 
     const category = this.categoryRepository.create({
       ...categoryData,
@@ -51,7 +60,7 @@ export class CategoriesService {
 
   async findAll() {
     return await this.categoryRepository.find({
-      order: { id: 'ASC' }, 
+      order: { id: 'ASC' },
     });
   }
 
@@ -60,10 +69,9 @@ export class CategoriesService {
     const skip = (page - 1) * limit;
 
     const [data, total] = await this.categoryRepository.findAndCount({
-      where: search ? [
-        { name_en: ILike(`%${search}%`) },
-        { name_ar: ILike(`%${search}%`) },
-      ] : {},
+      where: search
+        ? [{ name_en: ILike(`%${search}%`) }, { name_ar: ILike(`%${search}%`) }]
+        : {},
       skip,
       take: limit,
       order: { id: 'DESC' },
@@ -87,14 +95,21 @@ export class CategoriesService {
       relations: ['products'],
     });
     if (!category) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
+      const lang = I18nContext.current()?.lang || 'ar';
+      throw new NotFoundException(
+        this.i18n.t('common.CATEGORY.NOT_FOUND', { lang }),
+      );
     }
     return category;
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto, files?: Express.Multer.File[]): Promise<CategoryEntity> {
+  async update(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+    files?: Express.Multer.File[],
+  ): Promise<CategoryEntity> {
     const category = await this.findOne(id);
-    const { image : imageUrls, ...categoryData } = updateCategoryDto;
+    const { image: imageUrls, ...categoryData } = updateCategoryDto;
 
     Object.assign(category, categoryData);
 
@@ -107,7 +122,8 @@ export class CategoriesService {
       const fileName = `${Date.now()}-${file.originalname}`;
       const filePath = path.join(uploadPath, fileName);
       fs.writeFileSync(filePath, file.buffer);
-      const baseUrl = this.configService.get<string>('BASE_URL') || baseUrlLocale;
+      const baseUrl =
+        this.configService.get<string>('BASE_URL') || baseUrlLocale;
       category.image = `${baseUrl}/uploads/categories/${fileName}`;
     } else if (imageUrls) {
       category.image = imageUrls;
@@ -148,10 +164,14 @@ export class CategoriesService {
 
     const query = this.productRepository
       .createQueryBuilder('product')
-      .innerJoinAndSelect('product.category', 'category', 'category.slug = :slug', { slug });
- 
- 
-      // Price Filters
+      .innerJoinAndSelect(
+        'product.category',
+        'category',
+        'category.slug = :slug',
+        { slug },
+      );
+
+    // Price Filters
     if (priceRanges.length > 0) {
       query.andWhere(
         new Brackets((qb) => {
@@ -240,7 +260,7 @@ export class CategoriesService {
 
     const [products, total] = await query.getManyAndCount();
 
-    return { 
+    return {
       data: products,
       meta: {
         total,

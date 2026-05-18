@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm'; 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { CartItemEntity } from './cart-item.entity';
 import { currentTimestamp } from 'src/utilies/constant';
 
@@ -10,12 +17,20 @@ export class CartEntity {
   @Column({ nullable: true })
   userId?: number;
 
-  @OneToMany(() => CartItemEntity, (item) => item.cart, {eager: true, cascade: true,onDelete:'CASCADE' })
+  @OneToMany(() => CartItemEntity, (item) => item.cart, {
+    eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   CartItems: CartItemEntity[];
 
   @CreateDateColumn({ type: 'timestamp', default: () => currentTimestamp })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => currentTimestamp, onUpdate: currentTimestamp })
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => currentTimestamp,
+    onUpdate: currentTimestamp,
+  })
   updatedAt: Date;
 }

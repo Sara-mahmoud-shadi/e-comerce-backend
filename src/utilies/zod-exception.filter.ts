@@ -1,4 +1,9 @@
-import { Catch, ExceptionFilter, ArgumentsHost, HttpStatus } from '@nestjs/common';
+import {
+  Catch,
+  ExceptionFilter,
+  ArgumentsHost,
+  HttpStatus,
+} from '@nestjs/common';
 import { ZodError } from 'zod';
 import { I18nContext } from 'nestjs-i18n';
 import { ZodValidationException } from 'nestjs-zod';
@@ -10,7 +15,9 @@ export class ZodExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const i18n = I18nContext.current(host);
 
-    const zodError = (exception instanceof ZodError ? exception : exception.getZodError()) as ZodError;
+    const zodError = (
+      exception instanceof ZodError ? exception : exception.getZodError()
+    ) as ZodError;
 
     const errors = zodError.issues.map((err) => {
       let message = err.message;
@@ -30,11 +37,14 @@ export class ZodExceptionFilter implements ExceptionFilter {
       };
     });
 
+    const validationFailedMsg = i18n
+      ? i18n.t('common.VALIDATION.FAILED')
+      : 'Validation failed';
+
     response.status(HttpStatus.BAD_REQUEST).json({
       statusCode: HttpStatus.BAD_REQUEST,
-      message: 'Validation failed',
+      message: validationFailedMsg,
       errors: errors,
     });
   }
 }
-

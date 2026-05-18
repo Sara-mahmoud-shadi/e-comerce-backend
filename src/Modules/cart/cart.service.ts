@@ -17,13 +17,16 @@ export class CartService {
     private readonly productRepository: Repository<ProductEntity>,
   ) {}
 
-  async findAll(){
-    return await this.cartRepository.find({order:{id:'ASC',},  relations: ['CartItems', 'CartItems.product']});
+  async findAll() {
+    return await this.cartRepository.find({
+      order: { id: 'ASC' },
+      relations: ['CartItems', 'CartItems.product'],
+    });
   }
   async getCart(userId?: number): Promise<CartEntity> {
     let cart = await this.cartRepository.findOne({
       where: { userId },
-      relations: ['CartItems', 'CartItems.product']
+      relations: ['CartItems', 'CartItems.product'],
     });
 
     if (!cart) {
@@ -34,11 +37,16 @@ export class CartService {
     return cart;
   }
 
-  async addToCart(userId: number | undefined, addToCartDto: AddToCartDto): Promise<CartEntity> {
+  async addToCart(
+    userId: number | undefined,
+    addToCartDto: AddToCartDto,
+  ): Promise<CartEntity> {
     const cart = await this.getCart(userId);
     const { productId, quantity } = addToCartDto;
 
-    const product = await this.productRepository.findOne({ where: { id: productId } });
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
     if (!product) {
       throw new NotFoundException(`Product with ID ${productId} not found`);
     }
@@ -81,13 +89,18 @@ export class CartService {
   //   return await this.getCart(userId);
   // }
 
-  async removeItem(userId: number | undefined, itemId: number): Promise<CartEntity> {
+  async removeItem(
+    userId: number | undefined,
+    itemId: number,
+  ): Promise<CartEntity> {
     const cartItem = await this.cartItemRepository.findOne({
       where: { id: itemId, cart: { userId } },
     });
 
     if (!cartItem) {
-      throw new NotFoundException(`Cart item with ID ${itemId} not found in your cart`);
+      throw new NotFoundException(
+        `Cart item with ID ${itemId} not found in your cart`,
+      );
     }
 
     await this.cartItemRepository.remove(cartItem);
