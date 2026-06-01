@@ -11,11 +11,25 @@ import * as path from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  const configService = app.get(ConfigService);
+
+  // CORS — allow the frontend origin (set ALLOWED_ORIGINS in Railway env vars)
+  const allowedOrigins = configService
+    .get<string>('ALLOWED_ORIGINS', 'http://localhost:3000')
+    .split(',')
+    .map((o) => o.trim());
+
+  app.enableCors({
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'lang'],
+    credentials: true,
+  });
+
   // Serve uploaded files as static assets
   app.useStaticAssets(path.join(process.cwd(), 'uploads'), {
     prefix: '/uploads',
   });
-  const configService = app.get(ConfigService);
 
   // Enable global validation using zod
   app.useGlobalPipes(new ZodValidationPipe());
@@ -41,3 +55,4 @@ async function bootstrap() {
   console.log(`Application is running on: http://localhost:${port}`);
 }
 bootstrap();
+

@@ -25,7 +25,8 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env-development',
+      // Supports local dev (.env-development) and production (.env / Railway env vars)
+      envFilePath: ['.env', '.env-development'],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
