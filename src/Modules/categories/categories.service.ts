@@ -161,7 +161,13 @@ export class CategoriesService {
   ) {
     page = Number(page) > 0 ? Number(page) : 1;
     limit = Number(limit) > 0 ? Number(limit) : 10;
+   const category = await this.categoryRepository.findOne({
+  where: { slug },
+});
 
+if (!category) {
+  throw new NotFoundException(`Category ${slug} not found`);
+}
     const query = this.productRepository
       .createQueryBuilder('product')
       .innerJoinAndSelect(
@@ -261,6 +267,7 @@ export class CategoriesService {
     const [products, total] = await query.getManyAndCount();
 
     return {
+      category:category,
       data: products,
       meta: {
         total,
