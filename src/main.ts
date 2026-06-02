@@ -18,6 +18,8 @@ async function bootstrap() {
     .get<string>('ALLOWED_ORIGINS', 'http://localhost:3000')
     .split(',')
     .map((o) => o.trim());
+    
+  // تفعيل الـ CORS لتسمح للـ Frontend بالاتصال بالـ API بدون مشاكل
 
   app.enableCors({
     origin: allowedOrigins,
