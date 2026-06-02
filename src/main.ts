@@ -90,18 +90,9 @@ async function createApp(): Promise<INestApplication> {
 // ─── Vercel Serverless Handler ────────────────────────────────────────────────
 // Vercel will call this exported function for every incoming request.
 export default async function handler(req: any, res: any) {
-  try {
-    const app = await createApp();
-    const expressApp = app.getHttpAdapter().getInstance();
-    expressApp(req, res);
-  } catch (error: any) {
-    console.error('CRITICAL ERROR DURING APP INITIALIZATION:', error);
-    res.status(500).json({
-      message: 'Internal Server Error during NestJS initialization',
-      error: error.message,
-      stack: error.stack,
-    });
-  }
+  const app = await createApp();
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp(req, res);
 }
 
 // ─── Local Development ────────────────────────────────────────────────────────
@@ -146,7 +137,7 @@ async function bootstrap() {
   console.log(`Application is running on: http://localhost:${port}`);
 }
 
-// Only start the HTTP server when NOT running in production on Vercel
-if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
+// Only start the HTTP server when NOT running on Vercel
+if (process.env.VERCEL !== '1') {
   bootstrap();
 }
