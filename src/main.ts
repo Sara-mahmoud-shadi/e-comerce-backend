@@ -90,9 +90,18 @@ async function createApp(): Promise<INestApplication> {
 // ─── Vercel Serverless Handler ────────────────────────────────────────────────
 // Vercel will call this exported function for every incoming request.
 export default async function handler(req: any, res: any) {
-  const app = await createApp();
-  const expressApp = app.getHttpAdapter().getInstance();
-  expressApp(req, res);
+  try {
+    const app = await createApp();
+    const expressApp = app.getHttpAdapter().getInstance();
+    expressApp(req, res);
+  } catch (error: any) {
+    console.error('Vercel handler execution failed:', error);
+    res.status(500).json({
+      error: 'Vercel handler execution failed',
+      message: error.message,
+      stack: error.stack,
+    });
+  }
 }
 
 // ─── Local Development ────────────────────────────────────────────────────────
