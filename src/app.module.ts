@@ -32,17 +32,30 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        database: configService.get<string>('DB_DATABASE', 'ecommerce-db'),
-        username: configService.get<string>('DB_USERNAME', 'postgres'),
-        password: configService.get<string>('DB_PASSWORD', '16102000'),
-        port: configService.get<number>('DB_PORT', 5432),
-        host: configService.get<string>('DB_HOST', 'localhost'),
-        synchronize: configService.get<boolean>('DB_SYNCHRONIZE', true),
-        autoLoadEntities: true,
-        url: process.env.DATABASE_URL, // Your Neon string
-      }),
+      useFactory: (configService: ConfigService) => {
+        const databaseUrl = configService.get<string>('DATABASE_URL') || process.env.DATABASE_URL;
+        if (databaseUrl) {
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            synchronize: configService.get<boolean>('DB_SYNCHRONIZE', true),
+            autoLoadEntities: true,
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          };
+        }
+        return {
+          type: 'postgres',
+          database: configService.get<string>('DB_DATABASE', 'ecommerce-db'),
+          username: configService.get<string>('DB_USERNAME', 'postgres'),
+          password: configService.get<string>('DB_PASSWORD', '16102000'),
+          port: configService.get<number>('DB_PORT', 5432),
+          host: configService.get<string>('DB_HOST', 'localhost'),
+          synchronize: configService.get<boolean>('DB_SYNCHRONIZE', true),
+          autoLoadEntities: true,
+        };
+      },
     }),
     I18nModule.forRoot({
       fallbackLanguage: 'ar',
