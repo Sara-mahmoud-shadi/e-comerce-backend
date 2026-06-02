@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -89,18 +90,9 @@ async function createApp(): Promise<INestApplication> {
 // ─── Vercel Serverless Handler ────────────────────────────────────────────────
 // Vercel will call this exported function for every incoming request.
 export default async function handler(req: any, res: any) {
-  try {
-    const app = await createApp();
-    const expressApp = app.getHttpAdapter().getInstance();
-    expressApp(req, res);
-  } catch (error) {
-    console.error('NestJS App Initialization Error:', error);
-    res.status(500).json({
-      error: 'NestJS App Initialization Error',
-      message: error.message || String(error),
-      stack: error.stack,
-    });
-  }
+  const app = await createApp();
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp(req, res);
 }
 
 // ─── Local Development ────────────────────────────────────────────────────────
