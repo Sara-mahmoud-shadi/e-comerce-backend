@@ -11,11 +11,10 @@ export class AppController {
     private readonly i18n: I18nService,
   ) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Get translated hello message' })
-  @ApiResponse({ status: 200, description: 'Return translated greeting.' })
+  @Get() 
   getHello(): string {
     const lang = I18nContext.current()?.lang || 'ar';
-    return this.i18n.t('common.HELLO', { lang });
+    // return this.i18n.t('common.HELLO', { lang });
+    return "hello";
   }
 }
