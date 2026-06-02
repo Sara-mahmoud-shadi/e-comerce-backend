@@ -17,6 +17,7 @@ import { CartModule } from './Modules/cart/cart.module';
 import { OrdersModule } from './Modules/orders/orders.module';
 import { UsersModule } from './Modules/users/users.module';
 import { AuthModule } from './Modules/auth/auth.module';
+import { SettingsModule } from './Modules/settings/settings.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
@@ -60,6 +61,7 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
     OrdersModule,
     UsersModule,
     AuthModule,
+    SettingsModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

@@ -20,6 +20,8 @@
   "VALIDATION": {
     "REQUIRED": "This field is required",
     "INVALID_EMAIL": "Invalid email address",
+    "INVALID_URL": "Must be a valid URL",
+    "INVALID_PHONE": "Must be a valid phone number",
     "FAILED": "Validation failed",
     "NAME_REQUIRED": "Name is required",
     "DESCRIPTION_REQUIRED": "Description is required",
@@ -28,6 +30,22 @@
     "NAME_AR_REQUIRED": "Arabic name is required",
     "ADDRESS_REQUIRED": "Address is required",
     "PHONE_REQUIRED": "Phone is required",
-    "ITEMS_REQUIRED": "Order must have at least one item"
+    "ITEMS_REQUIRED": "Order must have at least one item",
+    "SITE_NAME_REQUIRED": "Site name is required",
+    "SITE_DESCRIPTION_REQUIRED": "Site description is required",
+    "LANGUAGE_REQUIRED": "Default language is required",
+    "STORE_EMAIL_REQUIRED": "Store email is required",
+    "STORE_PHONE_REQUIRED": "Store phone is required",
+    "STORE_ADDRESS_REQUIRED": "Store address is required",
+    "SUPPORT_EMAIL_REQUIRED": "Support email is required",
+    "META_TITLE_REQUIRED": "Meta title is required",
+    "META_DESCRIPTION_REQUIRED": "Meta description is required",
+    "KEYWORDS_REQUIRED": "Keywords are required"
+  },
+  "SETTINGS": {
+    "CREATED": "Settings created successfully",
+    "UPDATED": "Settings updated successfully",
+    "NOT_FOUND": "Settings not found",
+    "ALREADY_EXISTS": "Settings already exist. Use the update endpoint instead."
   }
 }

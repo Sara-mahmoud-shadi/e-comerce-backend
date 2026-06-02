@@ -20,6 +20,8 @@
   "VALIDATION": {
     "REQUIRED": "هذا الحقل مطلوب",
     "INVALID_EMAIL": "البريد الإلكتروني غير صحيح",
+    "INVALID_URL": "يجب أن يكون رابطاً صحيحاً",
+    "INVALID_PHONE": "يجب أن يكون رقم هاتف صحيحاً",
     "FAILED": "فشل التحقق من صحة البيانات",
     "NAME_REQUIRED": "الاسم مطلوب",
     "DESCRIPTION_REQUIRED": "الوصف مطلوب",
@@ -28,6 +30,22 @@
     "NAME_AR_REQUIRED": "الاسم بالعربية مطلوب",
     "ADDRESS_REQUIRED": "العنوان مطلوب",
     "PHONE_REQUIRED": "الهاتف مطلوب",
-    "ITEMS_REQUIRED": "يجب أن يحتوي الطلب على عنصر واحد على الأقل"
+    "ITEMS_REQUIRED": "يجب أن يحتوي الطلب على عنصر واحد على الأقل",
+    "SITE_NAME_REQUIRED": "اسم الموقع مطلوب",
+    "SITE_DESCRIPTION_REQUIRED": "وصف الموقع مطلوب",
+    "LANGUAGE_REQUIRED": "اللغة الافتراضية مطلوبة",
+    "STORE_EMAIL_REQUIRED": "البريد الإلكتروني للمتجر مطلوب",
+    "STORE_PHONE_REQUIRED": "رقم هاتف المتجر مطلوب",
+    "STORE_ADDRESS_REQUIRED": "عنوان المتجر مطلوب",
+    "SUPPORT_EMAIL_REQUIRED": "البريد الإلكتروني للدعم مطلوب",
+    "META_TITLE_REQUIRED": "عنوان الميتا مطلوب",
+    "META_DESCRIPTION_REQUIRED": "وصف الميتا مطلوب",
+    "KEYWORDS_REQUIRED": "الكلمات المفتاحية مطلوبة"
+  },
+  "SETTINGS": {
+    "CREATED": "تم إنشاء الإعدادات بنجاح",
+    "UPDATED": "تم تحديث الإعدادات بنجاح",
+    "NOT_FOUND": "الإعدادات غير موجودة",
+    "ALREADY_EXISTS": "الإعدادات موجودة بالفعل. استخدم نقطة نهاية التحديث بدلاً من ذلك."
   }
 }
