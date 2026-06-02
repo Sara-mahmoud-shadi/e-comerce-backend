@@ -28,7 +28,7 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
       isGlobal: true,
       // Supports local dev (.env-development) and production (.env / Railway env vars)
       // envFilePath: ['.env', '.env-development'],
-      envFilePath: process.env.NODE_ENV === 'development' ? '.env-development' : '.env',
+      envFilePath: process.env.NODE_ENV !== 'production' ? '.env-production' : '.env',
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -41,6 +41,7 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
         host: configService.get<string>('DB_HOST', 'localhost'),
         synchronize: configService.get<boolean>('DB_SYNCHRONIZE', true),
         autoLoadEntities: true,
+        url: process.env.DATABASE_URL, // Your Neon string
       }),
     }),
     I18nModule.forRoot({
