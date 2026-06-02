@@ -47,7 +47,7 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
     I18nModule.forRoot({
       fallbackLanguage: 'ar',
       loaderOptions: {
-        path: path.join(__dirname, '/i18n/'),
+        path: path.join(process.cwd(), 'src/i18n/'),
         // Disable file watcher in production — serverless filesystems don't support it
         watch: process.env.NODE_ENV !== 'production',
       },
