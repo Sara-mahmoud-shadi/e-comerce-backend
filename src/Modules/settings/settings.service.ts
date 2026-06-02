@@ -10,7 +10,7 @@ import { CreateSettingsDto, UpdateSettingsDto } from './dto/settings.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
-import { baseUrlLocale } from 'src/utilies/constant';
+import { baseUrlLocale } from '../../utilies/constant';
 
 @Injectable()
 export class SettingsService {

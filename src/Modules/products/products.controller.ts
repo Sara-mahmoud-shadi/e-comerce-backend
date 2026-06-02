@@ -24,7 +24,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductEntity } from './entities/product.entity';
-import { PaginationDto } from 'src/utilies/dto/pagination.dto';
+import { PaginationDto } from '../../utilies/dto/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
 

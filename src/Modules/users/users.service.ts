@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import * as bcrypt from 'bcryptjs';
-import { UserRole } from 'src/utilies/enums/user-role';
+import { UserRole } from '../../utilies/enums/user-role';
 
 @Injectable()
 export class UsersService implements OnModuleInit {

@@ -1,5 +1,5 @@
-import { ProductEntity } from 'src/Modules/products/entities/product.entity';
-import { currentTimestamp } from 'src/utilies/constant';
+import { ProductEntity } from '../../products/entities/product.entity';
+import { currentTimestamp } from '../../../utilies/constant';
 import {
   Entity,
   PrimaryGeneratedColumn,

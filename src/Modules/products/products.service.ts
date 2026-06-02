@@ -5,9 +5,9 @@ import { ProductEntity } from './entities/product.entity';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { PaginationDto } from 'src/utilies/dto/pagination.dto';
+import { PaginationDto } from '../../utilies/dto/pagination.dto';
 import { ConfigService } from '@nestjs/config';
-import { baseUrlLocale } from 'src/utilies/constant';
+import { baseUrlLocale } from '../../utilies/constant';
 
 @Injectable()
 export class ProductsService {

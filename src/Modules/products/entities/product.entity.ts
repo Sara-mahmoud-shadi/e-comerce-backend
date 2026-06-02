@@ -1,5 +1,5 @@
-import { CategoryEntity } from 'src/Modules/categories/entities/category.entity';
-import { currentTimestamp } from 'src/utilies/constant';
+import { CategoryEntity } from '../../categories/entities/category.entity';
+import { currentTimestamp } from '../../../utilies/constant';
 import {
   Entity,
   PrimaryGeneratedColumn,

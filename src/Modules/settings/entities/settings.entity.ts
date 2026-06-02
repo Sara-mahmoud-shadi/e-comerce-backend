@@ -1,4 +1,4 @@
-import { currentTimestamp } from 'src/utilies/constant';
+import { currentTimestamp } from '../../../utilies/constant';
 import {
   Entity,
   PrimaryGeneratedColumn,

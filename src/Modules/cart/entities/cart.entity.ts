@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CartItemEntity } from './cart-item.entity';
-import { currentTimestamp } from 'src/utilies/constant';
+import { currentTimestamp } from '../../../utilies/constant';
 
 @Entity('carts')
 export class CartEntity {

@@ -8,7 +8,7 @@ import { ProductEntity } from '../products/entities/product.entity';
 import { OrderStatus } from '../../utilies/enums/order-status.enum';
 
 import { OrderLogEntity } from './entities/order-log.entity';
-import { PaginationDto } from 'src/utilies/dto/pagination.dto';
+import { PaginationDto } from '../../utilies/dto/pagination.dto';
 
 @Injectable()
 export class OrdersService {

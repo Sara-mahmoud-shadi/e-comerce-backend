@@ -1,5 +1,5 @@
-import { currentTimestamp } from 'src/utilies/constant';
-import { UserRole } from 'src/utilies/enums/user-role';
+import { currentTimestamp } from '../../../utilies/constant';
+import { UserRole } from '../../../utilies/enums/user-role';
 import {
   Entity,
   PrimaryGeneratedColumn,

@@ -7,8 +7,8 @@ import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
-import { baseUrlLocale } from 'src/utilies/constant';
-import { PaginationDto } from 'src/utilies/dto/pagination.dto';
+import { baseUrlLocale } from '../../utilies/constant';
+import { PaginationDto } from '../../utilies/dto/pagination.dto';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()

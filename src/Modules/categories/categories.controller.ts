@@ -26,7 +26,7 @@ import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { CategoryEntity } from './entities/category.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
-import { PaginationDto } from 'src/utilies/dto/pagination.dto';
+import { PaginationDto } from '../../utilies/dto/pagination.dto';
 
 @ApiTags('Categories')
 @Controller('categories')

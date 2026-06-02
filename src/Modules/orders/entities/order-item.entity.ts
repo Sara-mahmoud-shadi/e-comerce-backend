@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { ProductEntity } from '../../products/entities/product.entity';
-import { currentTimestamp } from 'src/utilies/constant';
+import { currentTimestamp } from '../../../utilies/constant';
 
 @Entity('order_items')
 export class OrderItemEntity {

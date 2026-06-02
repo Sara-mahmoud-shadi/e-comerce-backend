@@ -9,7 +9,7 @@ import {
 import { OrderStatus } from '../../../utilies/enums/order-status.enum';
 import { OrderItemEntity } from './order-item.entity';
 import { OrderLogEntity } from './order-log.entity';
-import { currentTimestamp } from 'src/utilies/constant';
+import { currentTimestamp } from '../../../utilies/constant';
 
 @Entity('orders')
 export class OrderEntity {
