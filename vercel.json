@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/**/*": {
-      "includeFiles": "src/i18n/**"
+      "includeFiles": "dist/i18n/**"
     }
   },
   "rewrites": [
