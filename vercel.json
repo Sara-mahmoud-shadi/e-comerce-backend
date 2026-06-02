@@ -5,7 +5,10 @@
       "src": "src/main.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": "src/i18n/**"
+        "includeFiles": [
+          "src/i18n/**",
+          "tsconfig.json"
+        ]
       }
     }
   ],
