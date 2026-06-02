@@ -30,6 +30,9 @@ async function createApp(): Promise<INestApplication> {
   // Parse JSON bodies regardless of Content-Type header.
   // This handles clients that send JSON with wrong Content-Type (e.g. text/plain).
   app.use((req: any, _res: any, next: any) => {
+    if (req.headers['content-type']?.includes('multipart')) {
+      return next();
+    }
     express.json({ limit: '10mb', type: '*/*' })(req, _res, (err) => {
       if (err) {
         // If JSON parse failed, try urlencoded
