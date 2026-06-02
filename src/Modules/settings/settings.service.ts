@@ -95,6 +95,11 @@ export class SettingsService {
   // ─────────────────────────── helpers ────────────────────────────────────
 
   private saveFile(file: Express.Multer.File, folder: string): string {
+    if (process.env.VERCEL === '1') {
+      const base64 = file.buffer.toString('base64');
+      return `data:${file.mimetype};base64,${base64}`;
+    }
+
     const uploadPath = path.join(process.cwd(), 'uploads', 'settings', folder);
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
@@ -116,7 +121,9 @@ export class SettingsService {
       const baseUrl =
         this.configService.get<string>('BASE_URL') || baseUrlLocale;
       const relativePath = fileUrl.replace(baseUrl, '');
-      const absolutePath = path.join(process.cwd(), relativePath);
+      const absolutePath = process.env.VERCEL === '1'
+        ? path.join('/tmp', relativePath)
+        : path.join(process.cwd(), relativePath);
       if (fs.existsSync(absolutePath)) {
         fs.unlinkSync(absolutePath);
       }

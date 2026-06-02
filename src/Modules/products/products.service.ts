@@ -26,18 +26,25 @@ export class ProductsService {
     const productImages: string[] = imageUrls || [];
 
     if (files && files.length > 0) {
-      const uploadPath = path.join(process.cwd(), 'uploads', 'products');
-      if (!fs.existsSync(uploadPath)) {
-        fs.mkdirSync(uploadPath, { recursive: true });
-      }
+      if (process.env.VERCEL === '1') {
+        for (const file of files) {
+          const base64 = file.buffer.toString('base64');
+          productImages.push(`data:${file.mimetype};base64,${base64}`);
+        }
+      } else {
+        const uploadPath = path.join(process.cwd(), 'uploads', 'products');
+        if (!fs.existsSync(uploadPath)) {
+          fs.mkdirSync(uploadPath, { recursive: true });
+        }
 
-      const baseUrl =
-        this.configService.get<string>('BASE_URL') || baseUrlLocale;
-      for (const file of files) {
-        const fileName = `${Date.now()}-${file.originalname}`;
-        const filePath = path.join(uploadPath, fileName);
-        fs.writeFileSync(filePath, file.buffer);
-        productImages.push(`${baseUrl}/uploads/products/${fileName}`);
+        const baseUrl =
+          this.configService.get<string>('BASE_URL') || baseUrlLocale;
+        for (const file of files) {
+          const fileName = `${Date.now()}-${file.originalname}`;
+          const filePath = path.join(uploadPath, fileName);
+          fs.writeFileSync(filePath, file.buffer);
+          productImages.push(`${baseUrl}/uploads/products/${fileName}`);
+        }
       }
     }
 
@@ -212,21 +219,30 @@ export class ProductsService {
     Object.assign(product, productData);
 
     if (files && files.length > 0) {
-      const uploadPath = path.join(process.cwd(), 'uploads', 'products');
-      if (!fs.existsSync(uploadPath)) {
-        fs.mkdirSync(uploadPath, { recursive: true });
-      }
+      if (process.env.VERCEL === '1') {
+        const productImages: string[] = [];
+        for (const file of files) {
+          const base64 = file.buffer.toString('base64');
+          productImages.push(`data:${file.mimetype};base64,${base64}`);
+        }
+        product.images = productImages;
+      } else {
+        const uploadPath = path.join(process.cwd(), 'uploads', 'products');
+        if (!fs.existsSync(uploadPath)) {
+          fs.mkdirSync(uploadPath, { recursive: true });
+        }
 
-      const baseUrl =
-        this.configService.get<string>('BASE_URL') || baseUrlLocale;
-      const productImages: string[] = [];
-      for (const file of files) {
-        const fileName = `${Date.now()}-${file.originalname}`;
-        const filePath = path.join(uploadPath, fileName);
-        fs.writeFileSync(filePath, file.buffer);
-        productImages.push(`${baseUrl}/uploads/products/${fileName}`);
+        const baseUrl =
+          this.configService.get<string>('BASE_URL') || baseUrlLocale;
+        const productImages: string[] = [];
+        for (const file of files) {
+          const fileName = `${Date.now()}-${file.originalname}`;
+          const filePath = path.join(uploadPath, fileName);
+          fs.writeFileSync(filePath, file.buffer);
+          productImages.push(`${baseUrl}/uploads/products/${fileName}`);
+        }
+        product.images = productImages;
       }
-      product.images = productImages;
     } else if (imageUrls) {
       product.images = imageUrls;
     }

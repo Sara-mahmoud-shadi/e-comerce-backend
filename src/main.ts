@@ -58,12 +58,14 @@ async function createApp(): Promise<INestApplication> {
     credentials: true,
   });
 
-  // Serve uploaded files as static assets (local dev only — Vercel filesystem is read-only)
-  if (process.env.NODE_ENV !== 'production') {
-    app.useStaticAssets(path.join(process.cwd(), 'uploads'), {
-      prefix: '/uploads',
-    });
-  }
+  // Serve uploaded files as static assets (use /tmp/uploads on Vercel serverless to bypass read-only filesystem)
+  const uploadsDir = process.env.VERCEL === '1'
+    ? path.join('/tmp', 'uploads')
+    : path.join(process.cwd(), 'uploads');
+  
+  app.useStaticAssets(uploadsDir, {
+    prefix: '/uploads',
+  });
 
   // Enable global validation using zod
   app.useGlobalPipes(new ZodValidationPipe());

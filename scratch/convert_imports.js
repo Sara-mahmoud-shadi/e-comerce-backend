@@ -46,7 +46,6 @@ function walk(dir) {
     }
   }
 }
-
-console.log('Converting absolute src/ imports to relative imports...');
+ 
 walk(srcDir);
 console.log('Conversion complete!');

@@ -32,16 +32,21 @@ export class CategoriesService {
 
     if (files && files.length > 0) {
       const file = files[0];
-      const uploadPath = path.join(process.cwd(), 'uploads', 'categories');
-      if (!fs.existsSync(uploadPath)) {
-        fs.mkdirSync(uploadPath, { recursive: true });
+      if (process.env.VERCEL === '1') {
+        const base64 = file.buffer.toString('base64');
+        savedImage = `data:${file.mimetype};base64,${base64}`;
+      } else {
+        const uploadPath = path.join(process.cwd(), 'uploads', 'categories');
+        if (!fs.existsSync(uploadPath)) {
+          fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        const fileName = `${Date.now()}-${file.originalname}`;
+        const filePath = path.join(uploadPath, fileName);
+        fs.writeFileSync(filePath, file.buffer);
+        const baseUrl =
+          this.configService.get<string>('BASE_URL') || baseUrlLocale;
+        savedImage = `${baseUrl}/uploads/categories/${fileName}`;
       }
-      const fileName = `${Date.now()}-${file.originalname}`;
-      const filePath = path.join(uploadPath, fileName);
-      fs.writeFileSync(filePath, file.buffer);
-      const baseUrl =
-        this.configService.get<string>('BASE_URL') || baseUrlLocale;
-      savedImage = `${baseUrl}/uploads/categories/${fileName}`;
     }
 
     const slug = categoryData.name_en
@@ -115,16 +120,21 @@ export class CategoriesService {
 
     if (files && files.length > 0) {
       const file = files[0];
-      const uploadPath = path.join(process.cwd(), 'uploads', 'categories');
-      if (!fs.existsSync(uploadPath)) {
-        fs.mkdirSync(uploadPath, { recursive: true });
+      if (process.env.VERCEL === '1') {
+        const base64 = file.buffer.toString('base64');
+        category.image = `data:${file.mimetype};base64,${base64}`;
+      } else {
+        const uploadPath = path.join(process.cwd(), 'uploads', 'categories');
+        if (!fs.existsSync(uploadPath)) {
+          fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        const fileName = `${Date.now()}-${file.originalname}`;
+        const filePath = path.join(uploadPath, fileName);
+        fs.writeFileSync(filePath, file.buffer);
+        const baseUrl =
+          this.configService.get<string>('BASE_URL') || baseUrlLocale;
+        category.image = `${baseUrl}/uploads/categories/${fileName}`;
       }
-      const fileName = `${Date.now()}-${file.originalname}`;
-      const filePath = path.join(uploadPath, fileName);
-      fs.writeFileSync(filePath, file.buffer);
-      const baseUrl =
-        this.configService.get<string>('BASE_URL') || baseUrlLocale;
-      category.image = `${baseUrl}/uploads/categories/${fileName}`;
     } else if (imageUrls) {
       category.image = imageUrls;
     }
