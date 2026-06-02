@@ -18,7 +18,7 @@ export class SettingsService {
     @InjectRepository(SettingsEntity)
     private readonly settingsRepository: Repository<SettingsEntity>,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   /**
    * Returns the single settings record. If none exists, initialises one with defaults.
@@ -95,12 +95,9 @@ export class SettingsService {
   // ─────────────────────────── helpers ────────────────────────────────────
 
   private saveFile(file: Express.Multer.File, folder: string): string {
-    if (process.env.VERCEL === '1') {
-      const base64 = file.buffer.toString('base64');
-      return `data:${file.mimetype};base64,${base64}`;
-    }
-
-    const uploadPath = path.join(process.cwd(), 'uploads', 'settings', folder);
+    const uploadPath = process.env.VERCEL === '1'
+      ? path.join('/tmp', 'uploads', 'settings', folder)
+      : path.join(process.cwd(), 'uploads', 'settings', folder);
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -110,17 +107,25 @@ export class SettingsService {
     const filePath = path.join(uploadPath, fileName);
     fs.writeFileSync(filePath, file.buffer);
 
-    const baseUrl =
-      this.configService.get<string>('BASE_URL') || baseUrlLocale;
-    return `${baseUrl}/uploads/settings/${folder}/${fileName}`;
+    let baseUrl = this.configService.get<string>('BASE_URL');
+    if (!baseUrl) {
+      baseUrl = process.env.VERCEL === '1' && process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : baseUrlLocale;
+    }
+    return `${baseUrl.replace(/\/$/, '')}/uploads/settings/${folder}/${fileName}`;
   }
 
   private deleteOldFile(fileUrl: string): void {
     if (!fileUrl) return;
     try {
-      const baseUrl =
-        this.configService.get<string>('BASE_URL') || baseUrlLocale;
-      const relativePath = fileUrl.replace(baseUrl, '');
+      let baseUrl = this.configService.get<string>('BASE_URL');
+      if (!baseUrl) {
+        baseUrl = process.env.VERCEL === '1' && process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : baseUrlLocale;
+      }
+      const relativePath = fileUrl.replace(baseUrl.replace(/\/$/, ''), '');
       const absolutePath = process.env.VERCEL === '1'
         ? path.join('/tmp', relativePath)
         : path.join(process.cwd(), relativePath);

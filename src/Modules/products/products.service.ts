@@ -15,7 +15,7 @@ export class ProductsService {
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async create(
     createProductDto: CreateProductDto,
@@ -26,25 +26,24 @@ export class ProductsService {
     const productImages: string[] = imageUrls || [];
 
     if (files && files.length > 0) {
-      if (process.env.VERCEL === '1') {
-        for (const file of files) {
-          const base64 = file.buffer.toString('base64');
-          productImages.push(`data:${file.mimetype};base64,${base64}`);
-        }
-      } else {
-        const uploadPath = path.join(process.cwd(), 'uploads', 'products');
-        if (!fs.existsSync(uploadPath)) {
-          fs.mkdirSync(uploadPath, { recursive: true });
-        }
+      const uploadPath = process.env.VERCEL === '1'
+        ? path.join('/tmp', 'uploads', 'products')
+        : path.join(process.cwd(), 'uploads', 'products');
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+      }
 
-        const baseUrl =
-          this.configService.get<string>('BASE_URL') || baseUrlLocale;
-        for (const file of files) {
-          const fileName = `${Date.now()}-${file.originalname}`;
-          const filePath = path.join(uploadPath, fileName);
-          fs.writeFileSync(filePath, file.buffer);
-          productImages.push(`${baseUrl}/uploads/products/${fileName}`);
-        }
+      let baseUrl = this.configService.get<string>('BASE_URL');
+      if (!baseUrl) {
+        baseUrl = process.env.VERCEL === '1' && process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : baseUrlLocale;
+      }
+      for (const file of files) {
+        const fileName = `${Date.now()}-${file.originalname}`;
+        const filePath = path.join(uploadPath, fileName);
+        fs.writeFileSync(filePath, file.buffer);
+        productImages.push(`${baseUrl.replace(/\/$/, '')}/uploads/products/${fileName}`);
       }
     }
 
@@ -81,9 +80,9 @@ export class ProductsService {
     const [data, total] = await this.productRepository.findAndCount({
       where: search
         ? [
-            { name_en: ILike(`%${search}%`) },
-            { name_ar: ILike(`%${search}%`) },
-          ]
+          { name_en: ILike(`%${search}%`) },
+          { name_ar: ILike(`%${search}%`) },
+        ]
         : {},
       skip,
       take: limit,
@@ -219,30 +218,27 @@ export class ProductsService {
     Object.assign(product, productData);
 
     if (files && files.length > 0) {
-      if (process.env.VERCEL === '1') {
-        const productImages: string[] = [];
-        for (const file of files) {
-          const base64 = file.buffer.toString('base64');
-          productImages.push(`data:${file.mimetype};base64,${base64}`);
-        }
-        product.images = productImages;
-      } else {
-        const uploadPath = path.join(process.cwd(), 'uploads', 'products');
-        if (!fs.existsSync(uploadPath)) {
-          fs.mkdirSync(uploadPath, { recursive: true });
-        }
-
-        const baseUrl =
-          this.configService.get<string>('BASE_URL') || baseUrlLocale;
-        const productImages: string[] = [];
-        for (const file of files) {
-          const fileName = `${Date.now()}-${file.originalname}`;
-          const filePath = path.join(uploadPath, fileName);
-          fs.writeFileSync(filePath, file.buffer);
-          productImages.push(`${baseUrl}/uploads/products/${fileName}`);
-        }
-        product.images = productImages;
+      const uploadPath = process.env.VERCEL === '1'
+        ? path.join('/tmp', 'uploads', 'products')
+        : path.join(process.cwd(), 'uploads', 'products');
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
       }
+
+      let baseUrl = this.configService.get<string>('BASE_URL');
+      if (!baseUrl) {
+        baseUrl = process.env.VERCEL === '1' && process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : baseUrlLocale;
+      }
+      const productImages: string[] = [];
+      for (const file of files) {
+        const fileName = `${Date.now()}-${file.originalname}`;
+        const filePath = path.join(uploadPath, fileName);
+        fs.writeFileSync(filePath, file.buffer);
+        productImages.push(`${baseUrl.replace(/\/$/, '')}/uploads/products/${fileName}`);
+      }
+      product.images = productImages;
     } else if (imageUrls) {
       product.images = imageUrls;
     }
