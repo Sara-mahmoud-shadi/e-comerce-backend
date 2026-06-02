@@ -146,7 +146,7 @@ async function bootstrap() {
   console.log(`Application is running on: http://localhost:${port}`);
 }
 
-// Only start the HTTP server when NOT running on Vercel
-if (process.env.VERCEL !== '1') {
+// Only start the HTTP server when NOT running in production on Vercel
+if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
   bootstrap();
 }
