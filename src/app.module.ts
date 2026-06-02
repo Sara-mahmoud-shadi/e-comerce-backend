@@ -48,7 +48,8 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
       fallbackLanguage: 'ar',
       loaderOptions: {
         path: path.join(__dirname, '/i18n/'),
-        watch: true,
+        // Disable file watcher in production — serverless filesystems don't support it
+        watch: process.env.NODE_ENV !== 'production',
       },
       resolvers: [
         { use: HeaderResolver, options: ['lang'] },
