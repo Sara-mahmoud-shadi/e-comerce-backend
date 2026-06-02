@@ -14,13 +14,13 @@ export class SettingsEntity {
 
   // General
   @Column({ default: 'My Store' })
-  siteName: string;
+  site_name: string;
 
   @Column({ type: 'text', default: 'Best online shopping store' })
-  siteDescription: string;
+  site_description: string;
 
   @Column({ default: 'en' })
-  defaultLanguage: string;
+  default_language: string;
 
   // Media
   @Column({ nullable: true, default: '' })
@@ -31,36 +31,36 @@ export class SettingsEntity {
 
   // Contact
   @Column({ default: 'info@store.com' })
-  storeEmail: string;
+  store_email: string;
 
   @Column({ default: '+966500000000' })
-  storePhone: string;
+  store_phone: string;
 
   @Column({ type: 'text', default: 'Riyadh, Saudi Arabia' })
-  storeAddress: string;
+  store_address: string;
 
   @Column({ default: 'support@store.com' })
-  supportEmail: string;
+  support_email: string;
 
   // SEO
   @Column({ default: 'Best E-Commerce Store' })
-  metaTitle: string;
+  meta_title: string;
 
   @Column({ type: 'text', default: 'Online shopping website' })
-  metaDescription: string;
+  meta_description: string;
 
   @Column({ default: 'shop, ecommerce, store' })
   keywords: string;
 
   // Social Media
   @Column({ nullable: true, default: 'https://facebook.com/store' })
-  facebookUrl: string;
+  facebook_url: string;
 
   @Column({ nullable: true, default: 'https://instagram.com/store' })
-  instagramUrl: string;
+  instagram_url: string;
 
   @Column({ nullable: true, default: 'https://twitter.com/store' })
-  twitterUrl: string;
+  twitter_url: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => currentTimestamp })
   createdAt: Date;
