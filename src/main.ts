@@ -89,9 +89,18 @@ async function createApp(): Promise<INestApplication> {
 // ─── Vercel Serverless Handler ────────────────────────────────────────────────
 // Vercel will call this exported function for every incoming request.
 export default async function handler(req: any, res: any) {
-  const app = await createApp();
-  const expressApp = app.getHttpAdapter().getInstance();
-  expressApp(req, res);
+  try {
+    const app = await createApp();
+    const expressApp = app.getHttpAdapter().getInstance();
+    expressApp(req, res);
+  } catch (error) {
+    console.error('NestJS App Initialization Error:', error);
+    res.status(500).json({
+      error: 'NestJS App Initialization Error',
+      message: error.message || String(error),
+      stack: error.stack,
+    });
+  }
 }
 
 // ─── Local Development ────────────────────────────────────────────────────────

@@ -14,7 +14,7 @@ export class AppController {
   @Get() 
   getHello(): string {
     const lang = I18nContext.current()?.lang || 'ar';
-    // return this.i18n.t('common.HELLO', { lang });
-    return "hello";
+    return this.i18n.t('common.HELLO', { lang });
+    // return "hello";
   }
 }
