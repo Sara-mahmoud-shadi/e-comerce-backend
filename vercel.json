@@ -1,18 +1,14 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "src/main.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": "src/i18n/**/*.json"
-      }
+      "source": "/(.*)",
+      "destination": "/api"
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "src/main.ts"
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": "src/i18n/**/*.json"
     }
-  ]
+  }
 }
