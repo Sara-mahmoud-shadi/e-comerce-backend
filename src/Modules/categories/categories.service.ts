@@ -7,7 +7,7 @@ import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
-import { baseUrlLocale } from '../../utilies/constant';
+import { baseUrlLocale, getBaseUrl } from '../../utilies/constant';
 import { PaginationDto } from '../../utilies/dto/pagination.dto';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 
@@ -43,11 +43,8 @@ export class CategoriesService {
         const fileName = `${Date.now()}-${file.originalname}`;
         const filePath = path.join(uploadPath, fileName);
         fs.writeFileSync(filePath, file.buffer);
-        let baseUrl = this.configService.get<string>('BASE_URL');
-        if (!baseUrl) {
-          baseUrl = baseUrlLocale;
-        }
-        savedImage = `${baseUrl.replace(/\/$/, '')}/uploads/categories/${fileName}`;
+        const baseUrl = getBaseUrl();
+        savedImage = `${baseUrl}/uploads/categories/${fileName}`;
       }
     }
 
@@ -133,11 +130,8 @@ export class CategoriesService {
         const fileName = `${Date.now()}-${file.originalname}`;
         const filePath = path.join(uploadPath, fileName);
         fs.writeFileSync(filePath, file.buffer);
-        let baseUrl = this.configService.get<string>('BASE_URL');
-        if (!baseUrl) {
-          baseUrl = baseUrlLocale;
-        }
-        category.image = `${baseUrl.replace(/\/$/, '')}/uploads/categories/${fileName}`;
+        const baseUrl = getBaseUrl();
+        category.image = `${baseUrl}/uploads/categories/${fileName}`;
       }
     } else if (imageUrls) {
       category.image = imageUrls;

@@ -1,19 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository, Brackets } from 'typeorm';
 import { ProductEntity } from './entities/product.entity';
+import { CategoryEntity } from '../categories/entities/category.entity';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { PaginationDto } from '../../utilies/dto/pagination.dto';
 import { ConfigService } from '@nestjs/config';
-import { baseUrlLocale } from '../../utilies/constant';
+import { baseUrlLocale, getBaseUrl } from '../../utilies/constant';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
+    @InjectRepository(CategoryEntity)
+    private readonly categoryRepository: Repository<CategoryEntity>,
     private readonly configService: ConfigService,
   ) { }
 
@@ -37,10 +40,7 @@ export class ProductsService {
           fs.mkdirSync(uploadPath, { recursive: true });
         }
 
-        let baseUrl = this.configService.get<string>('BASE_URL');
-        if (!baseUrl) {
-          baseUrl = baseUrlLocale;
-        }
+        const baseUrl = getBaseUrl();
         for (const file of files) {
           const fileName = `${Date.now()}-${file.originalname}`;
           const filePath = path.join(uploadPath, fileName);
@@ -59,6 +59,17 @@ export class ProductsService {
       .replace(/--+/g, '-') // Replace multiple hyphens with single hyphen
       .replace(/^-+/, '') // Trim hyphens from start
       .replace(/-+$/, ''); // Trim hyphens from end
+
+    if (categoryId) {
+      const categoryExists = await this.categoryRepository.findOne({
+        where: { id: categoryId },
+      });
+      if (!categoryExists) {
+        throw new BadRequestException(
+          `Category with id ${categoryId} does not exist. Please create the category first.`,
+        );
+      }
+    }
 
     const product = this.productRepository.create({
       ...productData,
@@ -234,10 +245,7 @@ export class ProductsService {
           fs.mkdirSync(uploadPath, { recursive: true });
         }
 
-        let baseUrl = this.configService.get<string>('BASE_URL');
-        if (!baseUrl) {
-          baseUrl = baseUrlLocale;
-        }
+        const baseUrl = getBaseUrl();
         const productImages: string[] = [];
         for (const file of files) {
           const fileName = `${Date.now()}-${file.originalname}`;

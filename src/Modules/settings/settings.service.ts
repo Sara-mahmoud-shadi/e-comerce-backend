@@ -10,7 +10,7 @@ import { CreateSettingsDto, UpdateSettingsDto } from './dto/settings.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
-import { baseUrlLocale } from '../../utilies/constant';
+import { baseUrlLocale, getBaseUrl } from '../../utilies/constant';
 
 @Injectable()
 export class SettingsService {
@@ -110,23 +110,15 @@ export class SettingsService {
     const filePath = path.join(uploadPath, fileName);
     fs.writeFileSync(filePath, file.buffer);
 
-    let baseUrl = this.configService.get<string>('BASE_URL');
-    if (!baseUrl) {
-      baseUrl = baseUrlLocale;
-    }
-    return `${baseUrl.replace(/\/$/, '')}/uploads/settings/${folder}/${fileName}`;
+    const baseUrl = getBaseUrl();
+    return `${baseUrl}/uploads/settings/${folder}/${fileName}`;
   }
 
   private deleteOldFile(fileUrl: string): void {
     if (!fileUrl) return;
     try {
-      let baseUrl = this.configService.get<string>('BASE_URL');
-      if (!baseUrl) {
-        baseUrl = process.env.VERCEL === '1' && process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}`
-          : baseUrlLocale;
-      }
-      const relativePath = fileUrl.replace(baseUrl.replace(/\/$/, ''), '');
+      const baseUrl = getBaseUrl();
+      const relativePath = fileUrl.replace(baseUrl, '');
       const absolutePath = process.env.VERCEL === '1'
         ? path.join('/tmp', relativePath)
         : path.join(process.cwd(), relativePath);

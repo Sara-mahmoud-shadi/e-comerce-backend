@@ -41,7 +41,7 @@ export class ProductEntity {
   })
   category: CategoryEntity;
 
-  @Column('simple-array', { nullable: true })
+  @Column('simple-json', { nullable: true })
   images: string[];
 
   @Column({ nullable: true })
