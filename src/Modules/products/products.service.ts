@@ -16,8 +16,7 @@ export class ProductsService {
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
     @InjectRepository(CategoryEntity)
-    private readonly categoryRepository: Repository<CategoryEntity>,
-    private readonly configService: ConfigService,
+    private readonly categoryRepository: Repository<CategoryEntity>, 
   ) { }
 
   async create(
@@ -238,7 +237,7 @@ export class ProductsService {
           const base64 = file.buffer.toString('base64');
           productImages.push(`data:${file.mimetype};base64,${base64}`);
         }
-        product.images = productImages;
+        product.images = [...product.images, ...productImages];
       } else {
         const uploadPath = path.join(process.cwd(), 'uploads', 'products');
         if (!fs.existsSync(uploadPath)) {
@@ -253,10 +252,10 @@ export class ProductsService {
           fs.writeFileSync(filePath, file.buffer);
           productImages.push(`${baseUrl.replace(/\/$/, '')}/uploads/products/${fileName}`);
         }
-        product.images = productImages;
+        product.images = [...product.images, ...productImages];
       }
     } else if (imageUrls) {
-      product.images = imageUrls;
+      product.images = [...product.images, ...imageUrls];
     }
 
     if (productData.name_en) {

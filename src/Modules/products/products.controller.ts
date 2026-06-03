@@ -36,7 +36,7 @@ export class ProductsController {
   @Post()
   @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FilesInterceptor('images', 30, { limits: { fieldSize: 50 * 1024 * 1024 } }))
   @ApiOperation({ summary: 'Create a new product' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -129,7 +129,7 @@ export class ProductsController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FilesInterceptor('images', 20, { limits: { fieldSize: 50 * 1024 * 1024 } }))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
